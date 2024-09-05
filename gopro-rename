@@ -38,8 +38,25 @@ def get_transformed_filename(path: str, args: argparse.Namespace) -> str:
 
     match = re.match(r'G[PHXL](\d{2})(\d{4})(\..*)', basename)
     if match:
+        if basename.endswith('.LRV'):
+            dirname = os.path.join(dirname, 'proxy')
+            match[3] = match[3].replace('.LRV', '.MP4')
+        elif basename.endswith('.THM'):
+            dirname = os.path.join(dirname, 'thm')
+        elif basename.endswith('.WAV'):
+            dirname = os.path.join(dirname, 'audio')
         return os.path.join(dirname, f'{args.prefix}_{datetime.fromtimestamp(metadata.st_ctime).date()}_{int(match[2]):04}_{int(match[1]):02}{match[3]}')
-
+    # GoPro__2024-09-05_3540_01
+    match = re.match(r'GoPro__(\d{4}-\d{2}-\d{2})_(\d{4})_(\d{2})(\..*)', basename)
+    if match and match[4] in ['.LRV', '.THM', '.WAV']:
+        if basename.endswith('.LRV'):
+            dirname = os.path.join(dirname, 'proxy')
+            basename = basename.replace('.LRV', '.MP4')
+        elif basename.endswith('.THM'):
+            dirname = os.path.join(dirname, 'thm')
+        elif basename.endswith('.WAV'):
+            dirname = os.path.join(dirname, 'audio')
+        return os.path.join(dirname, basename)
     return path
 
 
@@ -59,6 +76,9 @@ def process_path(path: str, args: argparse.Namespace) -> None:
     if os.path.isfile(path):
         try_rename_file(path, args)
     elif os.path.isdir(path):
+        os.mkdir(path+'/proxy')
+        os.mkdir(path+'/thm')
+        os.mkdir(path+'/audio')
         for entry in os.listdir(path):
             if entry == '.' or entry == '..':
                 continue
@@ -66,6 +86,7 @@ def process_path(path: str, args: argparse.Namespace) -> None:
                 try_rename_file(os.path.join(path, entry), args)
             elif args.recursive and os.path.isdir(os.path.join(path, entry)):
                 process_path(os.path.join(path, entry), args)
+
 
 
 def main() -> int:
