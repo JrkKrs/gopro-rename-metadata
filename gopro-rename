@@ -40,15 +40,16 @@ def get_transformed_filename(path: str, args: argparse.Namespace) -> str:
                             f'{args.prefix}_{datetime.fromtimestamp(metadata.st_ctime).date()}_{int(match[1]):04}_00{match[2]}')
 
     match = re.match(r'G[PHXL](\d{2})(\d{4})(\..*)', basename)
+    file_ext = match[3]
     if match:
         if basename.endswith('.LRV'):
             dirname = os.path.join(dirname, 'proxy')
-            match[3] = match[3].replace('.LRV', '.MP4')
+            file_ext = file_ext.replace('.LRV', '.MP4')
         elif basename.endswith('.THM'):
             dirname = os.path.join(dirname, 'thm')
         elif basename.endswith('.WAV'):
             dirname = os.path.join(dirname, 'audio')
-        return os.path.join(dirname, f'{args.prefix}_{datetime.fromtimestamp(metadata.st_ctime).date()}_{int(match[2]):04}_{int(match[1]):02}{match[3]}')
+        return os.path.join(dirname, f'{args.prefix}_{datetime.fromtimestamp(metadata.st_ctime).date()}_{int(match[2]):04}_{int(match[1]):02}{file_ext}')
     # GoPro__2024-09-05_3540_01
     match = re.match(r'GoPro__(\d{4}-\d{2}-\d{2})_(\d{4})_(\d{2})(\..*)', basename)
     if match and match[4] in ['.LRV', '.THM', '.WAV']:
