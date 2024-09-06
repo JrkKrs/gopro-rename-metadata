@@ -26,6 +26,9 @@ import re
 import sys
 from datetime import datetime
 
+def create_dir(dirname: str) -> None:
+    if not os.path.exists(dirname):
+        os.mkdir(dirname)
 
 def get_transformed_filename(path: str, args: argparse.Namespace) -> str:
     metadata = os.stat(path)
@@ -76,9 +79,9 @@ def process_path(path: str, args: argparse.Namespace) -> None:
     if os.path.isfile(path):
         try_rename_file(path, args)
     elif os.path.isdir(path):
-        os.mkdir(path+'/proxy')
-        os.mkdir(path+'/thm')
-        os.mkdir(path+'/audio')
+        create_dir(path+'/proxy')
+        create_dir(path+'/thm')
+        create_dir(path+'/audio')
         for entry in os.listdir(path):
             if entry == '.' or entry == '..':
                 continue
