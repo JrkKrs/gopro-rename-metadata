@@ -40,8 +40,8 @@ def get_transformed_filename(path: str, args: argparse.Namespace) -> str:
                             f'{args.prefix}_{datetime.fromtimestamp(metadata.st_ctime).date()}_{int(match[1]):04}_00{match[2]}')
 
     match = re.match(r'G[PHXL](\d{2})(\d{4})(\..*)', basename)
-    file_ext = match[3]
     if match:
+        file_ext = match[3]
         if basename.endswith('.LRV'):
             dirname = os.path.join(dirname, 'proxy')
             file_ext = file_ext.replace('.LRV', '.MP4')
@@ -65,6 +65,7 @@ def get_transformed_filename(path: str, args: argparse.Namespace) -> str:
 
 
 def try_rename_file(path: str, args: argparse.Namespace) -> None:
+    print(path)
     target_path = get_transformed_filename(path, args)
 
     if target_path != path:
